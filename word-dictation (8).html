@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eshit va Yoz — Listen &amp; Write</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#1f2a24;
+    --paper:#f4f1e8;
+    --card:#ffffff;
+    --moss:#3c5c46;
+    --moss-dark:#2a4232;
+    --clay:#c1652f;
+    --clay-soft:#f3ddc9;
+    --err:#b3402c;
+    --err-soft:#f7ded6;
+    --ok:#2f6b46;
+    --ok-soft:#dcecdf;
+    --line:#dcd6c4;
+    --muted:#7a7566;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:32px 16px 64px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+
+  header{margin-bottom:28px;}
+  .eyebrow{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--clay);font-weight:600;margin:0 0 6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:32px;
+    margin:0 0 6px;color:var(--moss-dark);
+  }
+  .sub{color:var(--muted);font-size:14px;margin:0;}
+
+  nav{display:flex;gap:8px;margin:24px 0;border-bottom:1px solid var(--line);}
+  nav button{
+    background:none;border:none;padding:10px 4px;margin-right:16px;
+    font-family:'Inter',sans-serif;font-size:14px;font-weight:500;
+    color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
+    transition:color .15s;
+  }
+  nav button.active{color:var(--moss-dark);border-bottom-color:var(--clay);}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;margin-bottom:16px;
+  }
+
+  /* ADD FORM */
+  .row{display:flex;gap:10px;margin-bottom:10px;}
+  input[type=text]{
+    flex:1;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+    font-size:15px;font-family:'Inter',sans-serif;background:#fdfcf9;color:var(--ink);
+  }
+  input[type=text]:focus{outline:2px solid var(--moss);outline-offset:1px;}
+  button.primary{
+    background:var(--moss);color:#fff;border:none;border-radius:10px;
+    padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;
+    font-family:'Inter',sans-serif;transition:background .15s;
+  }
+  button.primary:hover{background:var(--moss-dark);}
+  button.ghost{
+    background:none;border:1px solid var(--line);border-radius:10px;
+    padding:9px 14px;font-size:13px;cursor:pointer;color:var(--ink);
+    font-family:'Inter',sans-serif;
+  }
+  button.ghost:hover{border-color:var(--moss);}
+  .hint{font-size:12px;color:var(--muted);margin:2px 0 14px;}
+  .bulk-label{font-size:13px;font-weight:600;color:var(--moss-dark);margin:0 0 8px;}
+  textarea{
+    width:100%;min-height:110px;padding:11px 13px;border:1px solid var(--line);
+    border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;
+    background:#fdfcf9;color:var(--ink);resize:vertical;
+  }
+  textarea:focus{outline:2px solid var(--moss);outline-offset:1px;}
+
+  .wordlist{list-style:none;padding:0;margin:0;}
+  .wordlist li{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 4px;border-bottom:1px solid var(--line);font-size:14px;
+  }
+  .wordlist li:last-child{border-bottom:none;}
+  .w-en{font-weight:600;color:var(--moss-dark);}
+  .w-uz{color:var(--muted);font-size:13px;margin-left:8px;}
+  .w-cat{
+    display:inline-block;background:var(--clay-soft);color:var(--clay);
+    font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;
+    margin-left:8px;text-transform:uppercase;letter-spacing:.03em;
+  }
+  .del{background:none;border:none;color:var(--err);cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;}
+  .empty{color:var(--muted);font-size:14px;padding:8px 4px;}
+
+  select{
+    padding:10px 12px;border:1px solid var(--line);border-radius:10px;
+    font-size:14px;font-family:'Inter',sans-serif;background:#fdfcf9;color:var(--ink);
+  }
+  select:focus{outline:2px solid var(--moss);outline-offset:1px;}
+
+  .answer-row{display:flex;gap:8px;max-width:340px;margin:0 auto 14px;}
+  .answer-row .answer{margin-bottom:0;}
+  .mic-btn{
+    width:48px;flex-shrink:0;border-radius:10px;border:1.5px solid var(--line);
+    background:#fdfcf9;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:background .15s,border-color .15s;
+  }
+  .mic-btn svg{width:20px;height:20px;fill:var(--muted);}
+  .mic-btn.listening{background:var(--err-soft);border-color:var(--err);}
+  .mic-btn.listening svg{fill:var(--err);}
+  .mic-btn:hover{border-color:var(--moss);}
+
+  /* PRACTICE */
+  .stage{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:40px 28px;text-align:center;
+  }
+  .progress{font-size:12px;color:var(--muted);margin-bottom:18px;letter-spacing:.05em;}
+  .speaker{
+    width:76px;height:76px;border-radius:50%;background:var(--clay-soft);
+    border:none;display:flex;align-items:center;justify-content:center;
+    margin:0 auto 22px;cursor:pointer;transition:transform .12s;
+  }
+  .speaker:active{transform:scale(.94);}
+  .speaker svg{width:32px;height:32px;fill:var(--clay);}
+  .replay-hint{font-size:12px;color:var(--muted);margin:-14px 0 22px;}
+  .answer{
+    width:100%;max-width:340px;padding:13px 16px;font-size:18px;
+    border:1.5px solid var(--line);border-radius:10px;text-align:center;
+    font-family:'Inter',sans-serif;background:#fdfcf9;color:var(--ink);
+    margin-bottom:14px;
+  }
+  .answer:focus{outline:none;border-color:var(--moss);}
+  .answer.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .answer.wrong{border-color:var(--err);background:var(--err-soft);}
+  .feedback{font-size:14px;min-height:20px;margin-bottom:14px;font-weight:500;}
+  .feedback.ok{color:var(--ok);}
+  .feedback.no{color:var(--err);}
+  .meaning{font-size:13px;color:var(--muted);margin-bottom:18px;}
+  .controls{display:flex;gap:10px;justify-content:center;}
+  .done{padding:20px 0;}
+  .done h2{font-family:'Fraunces',serif;color:var(--moss-dark);margin:0 0 8px;}
+  .score{font-size:15px;color:var(--muted);}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Listen &amp; Write · Eshit va Yoz</p>
+    <h1>Word practice</h1>
+    <p class="sub">Add words once, then practise by ear — listen, type, check.</p>
+  </header>
+
+  <nav>
+    <button id="tab-practice" class="active">Practise</button>
+    <button id="tab-manage">My words</button>
+  </nav>
+
+  <!-- MANAGE TAB -->
+  <section id="panel-manage" class="hidden">
+    <div class="card">
+      <p class="bulk-label">Cloud sync (works in any browser, any device)</p>
+      <div class="row">
+        <input type="text" id="cloud-key" placeholder="API key from jsonbin.io">
+      </div>
+      <div class="row">
+        <input type="text" id="cloud-bin" placeholder="Bin ID — leave empty the first time">
+        <button class="primary" id="cloud-btn">Connect</button>
+      </div>
+      <p class="hint" id="cloud-status">First device: leave "Bin ID" empty and press Connect — it creates a new bin and shows you the ID. Copy that ID plus your API key into this same box on your other device, then press Connect there too.</p>
+    </div>
+    <div class="card">
+      <div class="row">
+        <input type="text" id="in-en" placeholder="English word (e.g. discharge)">
+      </div>
+      <div class="row">
+        <input type="text" id="in-uz" placeholder="Uzbek meaning — optional (masalan: chiqarib yuborish)">
+      </div>
+      <div class="row">
+        <input type="text" id="in-cat" placeholder="Category — optional (masalan: OET, kunlik so'zlar)">
+        <button class="primary" id="add-btn">Add</button>
+      </div>
+      <p class="hint">Words are saved on this device and stay here next time you open the app.</p>
+    </div>
+
+    <div class="card">
+      <p class="bulk-label">Add many words at once</p>
+      <textarea id="bulk-input" placeholder="One word per line. Optionally add the Uzbek meaning after a dash or comma:&#10;discharge - chiqarib yuborish&#10;referral, yuborish (shifokorga)&#10;faint"></textarea>
+      <div class="row" style="margin-top:10px;">
+        <input type="text" id="bulk-cat" placeholder="Category for this batch — optional">
+      </div>
+      <div class="row">
+        <button class="primary" id="bulk-add-btn">Add all</button>
+        <span class="hint" id="bulk-status" style="margin:0;align-self:center;"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom:0;">
+        <button class="ghost" id="export-btn">Download backup</button>
+        <button class="ghost" id="import-btn">Restore backup</button>
+        <input type="file" id="import-file" accept=".txt" style="display:none;">
+      </div>
+    </div>
+
+    <div class="card">
+      <ul class="wordlist" id="word-list"></ul>
+      <p class="empty hidden" id="empty-msg">No words yet — add some above to get started.</p>
+    </div>
+  </section>
+
+  <!-- PRACTICE TAB -->
+  <section id="panel-practice">
+    <div class="row" style="max-width:340px;margin:0 auto 16px;">
+      <select id="cat-filter" style="flex:1;"></select>
+    </div>
+    <div class="stage" id="stage-active">
+      <p class="progress" id="progress-txt">1 / 1</p>
+      <button class="speaker" id="speak-btn" aria-label="Play pronunciation">
+        <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4zm11.5 3c0-1.77-1-3.29-2.5-4.03v8.06c1.5-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+      </button>
+      <p class="replay-hint">Tap to hear it again</p>
+      <div class="answer-row">
+        <input type="text" class="answer" id="answer-input" placeholder="Type or speak what you hear" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="mic-btn" id="mic-btn" aria-label="Answer by speaking" title="Speak your answer">
+          <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.92V21h2v-3.08A7 7 0 0019 11h-2z"/></svg>
+        </button>
+      </div>
+      <p class="feedback" id="feedback-txt"></p>
+      <p class="meaning hidden" id="meaning-txt"></p>
+      <div class="controls">
+        <button class="ghost" id="hint-btn">Show meaning</button>
+        <button class="primary" id="check-btn">Check</button>
+      </div>
+    </div>
+    <div class="stage hidden" id="stage-empty">
+      <p class="empty">Add a few words in "My words" first, then come back here to practise.</p>
+    </div>
+    <div class="stage hidden" id="stage-done">
+      <div class="done">
+        <h2>Round complete</h2>
+        <p class="score" id="score-txt"></p>
+        <div class="controls" style="margin-top:16px;">
+          <button class="primary" id="restart-btn">Practise again</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+let words = [];
+let queue = [];
+let current = null;
+let correctCount = 0;
+let totalCount = 0;
+let poolSize = 0;
+let checked = false;
+
+const tabPractice = document.getElementById('tab-practice');
+const tabManage = document.getElementById('tab-manage');
+const panelPractice = document.getElementById('panel-practice');
+const panelManage = document.getElementById('panel-manage');
+
+tabPractice.onclick = () => switchTab('practice');
+tabManage.onclick = () => switchTab('manage');
+
+function switchTab(name){
+  const p = name === 'practice';
+  tabPractice.classList.toggle('active', p);
+  tabManage.classList.toggle('active', !p);
+  panelPractice.classList.toggle('hidden', !p);
+  panelManage.classList.toggle('hidden', p);
+  if(p) startRound();
+}
+
+let cloudKey = '';
+let cloudBin = '';
+
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3/b';
+
+async function loadWords(){
+  try{
+    const keyRes = await window.storage.get('cloud-key');
+    cloudKey = keyRes ? keyRes.value : '';
+  }catch(e){ cloudKey = ''; }
+  try{
+    const binRes = await window.storage.get('cloud-bin');
+    cloudBin = binRes ? binRes.value : '';
+  }catch(e){ cloudBin = ''; }
+
+  document.getElementById('cloud-key').value = cloudKey;
+  document.getElementById('cloud-bin').value = cloudBin;
+  updateCloudStatus();
+
+  if(cloudKey && cloudBin){
+    const remote = await fetchFromCloud();
+    if(remote !== null){
+      words = remote;
+      renderList();
+      startRound();
+      return;
+    }
+  }
+
+  try{
+    const res = await window.storage.get('vocab-words');
+    words = res ? JSON.parse(res.value) : [];
+  }catch(e){
+    words = [];
+  }
+  renderList();
+  startRound();
+}
+
+async function fetchFromCloud(){
+  try{
+    const res = await fetch(`${JSONBIN_BASE}/${cloudBin}/latest`, {
+      headers: { 'X-Master-Key': cloudKey }
+    });
+    if(!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+    return (data.record && Array.isArray(data.record.words)) ? data.record.words : [];
+  }catch(e){
+    updateCloudStatus('Could not reach the cloud — check your API key and bin ID.');
+    return null;
+  }
+}
+
+async function saveWords(){
+  if(cloudKey && cloudBin){
+    try{
+      await fetch(`${JSONBIN_BASE}/${cloudBin}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': cloudKey },
+        body: JSON.stringify({ words })
+      });
+    }catch(e){
+      console.error('cloud save failed', e);
+    }
+  }else{
+    try{
+      await window.storage.set('vocab-words', JSON.stringify(words));
+    }catch(e){
+      console.error('local save failed', e);
+    }
+  }
+}
+
+function updateCloudStatus(customMsg){
+  const status = document.getElementById('cloud-status');
+  if(customMsg){
+    status.textContent = customMsg;
+    return;
+  }
+  if(cloudKey && cloudBin){
+    status.textContent = `Connected — bin ID: ${cloudBin}. Enter this same API key and bin ID on your other devices.`;
+  }else{
+    status.textContent = 'First device: leave "Bin ID" empty and press Connect — it creates a new bin and shows you the ID. Copy that ID plus your API key into this same box on your other device, then press Connect there too.';
+  }
+}
+
+document.getElementById('cloud-btn').onclick = async () => {
+  const keyInput = document.getElementById('cloud-key');
+  const binInput = document.getElementById('cloud-bin');
+  const newKey = keyInput.value.trim();
+  const newBin = binInput.value.trim();
+
+  if(!newKey){
+    updateCloudStatus('Paste your jsonbin.io API key first.');
+    return;
+  }
+
+  updateCloudStatus('Connecting…');
+
+  if(newBin){
+    cloudKey = newKey;
+    cloudBin = newBin;
+    const remote = await fetchFromCloud();
+    if(remote === null) return;
+    words = remote;
+    await window.storage.set('cloud-key', cloudKey);
+    await window.storage.set('cloud-bin', cloudBin);
+    updateCloudStatus();
+    renderList();
+    startRound();
+  }else{
+    try{
+      const res = await fetch(JSONBIN_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': newKey },
+        body: JSON.stringify({ words })
+      });
+      if(!res.ok) throw new Error('create failed');
+      const data = await res.json();
+      cloudKey = newKey;
+      cloudBin = data.metadata.id;
+      binInput.value = cloudBin;
+      await window.storage.set('cloud-key', cloudKey);
+      await window.storage.set('cloud-bin', cloudBin);
+      updateCloudStatus();
+    }catch(e){
+      updateCloudStatus('Could not create a bin — check your API key is correct.');
+    }
+  }
+};
+
+function renderList(){
+  const ul = document.getElementById('word-list');
+  const empty = document.getElementById('empty-msg');
+  ul.innerHTML = '';
+  if(words.length === 0){
+    empty.classList.remove('hidden');
+  }else{
+    empty.classList.add('hidden');
+    words.forEach((w, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span><span class="w-en">${escapeHtml(w.en)}</span>${w.uz ? `<span class="w-uz">— ${escapeHtml(w.uz)}</span>` : ''}${w.category ? `<span class="w-cat">${escapeHtml(w.category)}</span>` : ''}</span>`;
+      const del = document.createElement('button');
+      del.className = 'del';
+      del.textContent = 'Remove';
+      del.onclick = () => removeWord(i);
+      li.appendChild(del);
+      ul.appendChild(li);
+    });
+  }
+  populateCategoryFilter();
+}
+
+function populateCategoryFilter(){
+  const sel = document.getElementById('cat-filter');
+  const prev = sel.value;
+  const cats = Array.from(new Set(words.map(w => w.category).filter(c => c))).sort();
+  sel.innerHTML = '<option value="__all">All categories</option>' +
+    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  if(cats.includes(prev)) sel.value = prev;
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+document.getElementById('add-btn').onclick = addWord;
+document.getElementById('in-en').addEventListener('keydown', e => { if(e.key==='Enter') addWord(); });
+document.getElementById('in-uz').addEventListener('keydown', e => { if(e.key==='Enter') addWord(); });
+
+function addWord(){
+  const enInput = document.getElementById('in-en');
+  const uzInput = document.getElementById('in-uz');
+  const catInput = document.getElementById('in-cat');
+  const en = enInput.value.trim();
+  const uz = uzInput.value.trim();
+  const category = catInput.value.trim();
+  if(!en) { enInput.focus(); return; }
+  words.push({en, uz, category, wrongCount: 0, correctCount: 0});
+  enInput.value = '';
+  uzInput.value = '';
+  enInput.focus();
+  saveWords();
+  renderList();
+}
+
+document.getElementById('bulk-add-btn').onclick = bulkAdd;
+
+function bulkAdd(){
+  const box = document.getElementById('bulk-input');
+  const status = document.getElementById('bulk-status');
+  const category = document.getElementById('bulk-cat').value.trim();
+  const lines = box.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if(lines.length === 0){ status.textContent = ''; return; }
+
+  let added = 0;
+  lines.forEach(line => {
+    let lineCategory = category;
+    const catMatch = line.match(/^(.*)\s*\[(.+)\]\s*$/);
+    if(catMatch){
+      line = catMatch[1].trim();
+      lineCategory = catMatch[2].trim();
+    }
+    let en = line, uz = '';
+    const sepMatch = line.match(/^(.*?)[-–—,]\s*(.+)$/);
+    if(sepMatch){
+      en = sepMatch[1].trim();
+      uz = sepMatch[2].trim();
+    }
+    if(en){
+      words.push({en, uz, category: lineCategory, wrongCount: 0, correctCount: 0});
+      added++;
+    }
+  });
+
+  box.value = '';
+  saveWords();
+  renderList();
+  status.textContent = `Added ${added} word${added === 1 ? '' : 's'}.`;
+  setTimeout(() => { status.textContent = ''; }, 3000);
+}
+
+function removeWord(i){
+  words.splice(i, 1);
+  saveWords();
+  renderList();
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildWeightedQueue(pool){
+  let list = [];
+  pool.forEach(w => {
+    const weight = 1 + Math.min(w.wrongCount || 0, 3);
+    for(let i = 0; i < weight; i++) list.push(w);
+  });
+  return shuffle(list);
+}
+
+function currentPool(){
+  const filter = document.getElementById('cat-filter').value;
+  if(!filter || filter === '__all') return words;
+  return words.filter(w => w.category === filter);
+}
+
+function startRound(){
+  document.getElementById('stage-done').classList.add('hidden');
+  const pool = currentPool();
+  if(pool.length === 0){
+    document.getElementById('stage-active').classList.add('hidden');
+    document.getElementById('stage-empty').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('stage-empty').classList.add('hidden');
+  document.getElementById('stage-active').classList.remove('hidden');
+  queue = buildWeightedQueue(pool);
+  poolSize = pool.length;
+  correctCount = 0;
+  totalCount = 0;
+  nextWord();
+}
+
+function nextWord(){
+  checked = false;
+  document.getElementById('meaning-txt').classList.add('hidden');
+  document.getElementById('hint-btn').textContent = 'Show meaning';
+  const input = document.getElementById('answer-input');
+  input.value = '';
+  input.className = 'answer';
+  document.getElementById('feedback-txt').textContent = '';
+  document.getElementById('feedback-txt').className = 'feedback';
+
+  if(queue.length === 0){
+    document.getElementById('stage-active').classList.add('hidden');
+    document.getElementById('stage-done').classList.remove('hidden');
+    document.getElementById('score-txt').textContent = `${correctCount} / ${totalCount} correct`;
+    return;
+  }
+  current = queue.shift();
+  totalCount++;
+  document.getElementById('progress-txt').textContent = `Word ${totalCount} · ${queue.length} left`;
+  document.getElementById('meaning-txt').textContent = current.uz || 'No translation saved for this word';
+  input.focus();
+  speak(current.en);
+}
+
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+}
+
+document.getElementById('speak-btn').onclick = () => { if(current) speak(current.en); };
+document.getElementById('cat-filter').addEventListener('change', startRound);
+document.getElementById('hint-btn').onclick = () => {
+  const m = document.getElementById('meaning-txt');
+  m.classList.toggle('hidden');
+  document.getElementById('hint-btn').textContent = m.classList.contains('hidden') ? 'Show meaning' : 'Hide meaning';
+};
+
+document.getElementById('check-btn').onclick = checkAnswer;
+document.getElementById('answer-input').addEventListener('keydown', e => {
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    if(!checked) checkAnswer();
+    else nextWord();
+  }
+});
+
+function checkAnswer(){
+  if(!current) return;
+  const input = document.getElementById('answer-input');
+  const val = input.value.trim().toLowerCase();
+  const target = current.en.trim().toLowerCase();
+  const fb = document.getElementById('feedback-txt');
+
+  if(val === target){
+    correctCount++;
+    current.correctCount = (current.correctCount || 0) + 1;
+    input.className = 'answer correct';
+    fb.textContent = 'Correct — moving on';
+    fb.className = 'feedback ok';
+    checked = true;
+    saveWords();
+    setTimeout(nextWord, 700);
+  }else{
+    current.wrongCount = (current.wrongCount || 0) + 1;
+    input.className = 'answer wrong';
+    fb.textContent = `Not quite — it's spelled "${current.en}". Press Enter to continue.`;
+    fb.className = 'feedback no';
+    checked = true;
+    const reinsertAt = Math.min(queue.length, 3 + Math.floor(Math.random() * 3));
+    queue.splice(reinsertAt, 0, current);
+    saveWords();
+  }
+}
+
+document.getElementById('restart-btn').onclick = startRound;
+
+// Voice input for answering by speaking instead of typing
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+const micBtn = document.getElementById('mic-btn');
+if(SpeechRec){
+  const recognition = new SpeechRec();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  let listening = false;
+
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    document.getElementById('answer-input').value = transcript;
+    checkAnswer();
+  };
+  recognition.onend = () => {
+    listening = false;
+    micBtn.classList.remove('listening');
+  };
+  recognition.onerror = () => {
+    listening = false;
+    micBtn.classList.remove('listening');
+  };
+
+  micBtn.onclick = () => {
+    if(listening){
+      recognition.stop();
+      return;
+    }
+    listening = true;
+    micBtn.classList.add('listening');
+    recognition.start();
+  };
+}else{
+  micBtn.style.display = 'none';
+}
+
+document.getElementById('export-btn').onclick = () => {
+  const text = words.map(w => {
+    let line = w.en;
+    if(w.uz) line += ` - ${w.uz}`;
+    if(w.category) line += ` [${w.category}]`;
+    return line;
+  }).join('\n');
+  const blob = new Blob([text], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'my-words-backup.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('import-btn').onclick = () => {
+  document.getElementById('import-file').click();
+};
+
+document.getElementById('import-file').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    document.getElementById('bulk-input').value = evt.target.result;
+    bulkAdd();
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+loadWords();
+</script>
+</body>
+</html>
